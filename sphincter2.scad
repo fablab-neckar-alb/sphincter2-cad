@@ -13,8 +13,8 @@ z_r_koerper     = 5+0.1;      // Radius Körper
 z_korr_loecher  = 0.4;        // Y-Korrektur Bohrlöcher
 
 p_breite        = 70;         // Breite Grundplatte
-p_laenge        = 125;        // Länge Grundplatte
-p_hoehe         = 5;          // Höhe Grundplatte
+p_laenge        = 165;        // Länge Grundplatte
+p_hoehe         = 12.22+3;          // Höhe Grundplatte
 p_radius        = 5;          // Radius Eckenrundung
 
 l_hoehe         = 20.1;       // Hoehe des Lagers
@@ -26,7 +26,7 @@ m_langloch      = 3;          // Länge des Motorlanglochs
 schluesseldicke = 2.5;        // Dicke des Schlüssels
 
 
-generator = 0;  // Welches Teil soll generiert werden?
+generator = 3;  // Welches Teil soll generiert werden?
 // 0: Alles
 // 1: großes Zahnrad
 // 2: kleines Zahnrad
@@ -186,7 +186,7 @@ module zahnrad(groesse=3) {
             }
 
             translate([0,20,-4])rotate([90,0,0])cylinder(r=1.8,h=20);
-            #translate([0,8+6.7,-4])rotate([90,0,0])cylinder(r=3.1,h=5);
+            translate([0,8+6.7,-4])rotate([90,0,0])cylinder(r=3.1,h=5);
             hull(){
                 translate([0,7.5,-4])rotate([90,30,0])
                     cylinder(r=3.25,h=3,$fn=6);
@@ -196,7 +196,7 @@ module zahnrad(groesse=3) {
 
             rotate([0,0,90]){
                 translate([0,20,-4])rotate([90,0,0])cylinder(r=1.8,h=20);
-                #translate([0,8+6.7,-4])rotate([90,0,0])cylinder(r=3.1,h=5);
+                translate([0,8+6.7,-4])rotate([90,0,0])cylinder(r=3.1,h=5);
                 hull(){
                     translate([0,7.5,-4])rotate([90,30,0])
                         cylinder(r=3.25,h=3,$fn=6);
@@ -318,7 +318,9 @@ module halteplatten_loecher() {
 
 
 module zylinder(
-        lochabstand = 50
+        // flux fix 1
+        lochabstand = +7.5+69,
+        lochabstand2 = -7.5+41
         ){
 
     cylinder(r=z_r_kopf,h=z_hoehe);
@@ -333,20 +335,21 @@ module zylinder(
     translate([0,-z_laenge/2+z_r_kopf+z_korr_loecher,0]){
 
         // Oberes Schraubloch
-        translate([0,lochabstand/2,0])cylinder(r=2.2,h=z_hoehe);
-        translate([0,lochabstand/2,2])cylinder(r1=2.2,r2=5.2,h=3);
-        translate([0,lochabstand/2,5])cylinder(r=6.5,h=z_hoehe);
-
+        translate([0,lochabstand,0])cylinder(r=5.8/2,h=z_hoehe);
+        translate([0,lochabstand,2])cylinder(r1=5.8/2,r2=5.2,h=3);
+        
         // Unteres Schraubloch
-        translate([0,-lochabstand/2,0])cylinder(r=2.2,h=z_hoehe);
-        translate([0,-lochabstand/2,2])cylinder(r1=2.2,r2=5.2,h=3);
+        translate([0,-lochabstand2,0])cylinder(r=5.8/2,h=z_hoehe);
+        translate([0,-lochabstand2,2])cylinder(r1=5.8/2,r2=5.2,h=3);
 
     }
 }
 
 
 module platte(){
+  difference(){
     hull(){
+      translate([0,15,5-p_hoehe]) { // flux fix 2
         translate([p_breite/2-p_radius,p_laenge/2-p_radius,0])
             cylinder(r=p_radius,h=p_hoehe);
         translate([-(p_breite/2-p_radius),p_laenge/2-p_radius,0])
@@ -355,8 +358,13 @@ module platte(){
             cylinder(r=p_radius,h=p_hoehe);
         translate([-(p_breite/2-p_radius),-(p_laenge/2-p_radius),0])
             cylinder(r=p_radius,h=p_hoehe);
+      }
     }
+    // flux: hier sind noch fehler:
 
+    translate([0,0,-7.6]) // ??
+    #cube([35,p_laenge*2, p_hoehe], center=true);
+  }
 }
 
 difference(){
